@@ -48,3 +48,7 @@ out/
 1.0版1-8章讲义.docx
 temp/
 docx_temp/
+extract_docx.py
+extract.txt
+DEVELOPMENT_CYCLE.md
+DEVELOPMENT_STEPS.md
