@@ -1,0 +1,22 @@
+# Root Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts in root (if any)
+dist/
+target/
+build/

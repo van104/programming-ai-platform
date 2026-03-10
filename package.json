@@ -1,0 +1,12 @@
+{
+  "name": "programming-ai-platform",
+  "version": "1.0.0",
+  "scripts": {
+    "frontend": "npm run dev --prefix ai-platform-frontend",
+    "backend": "mvnw spring-boot:run --prefix ai-platform-backend",
+    "dev": "concurrently \"npm run frontend\" \"npm run backend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
