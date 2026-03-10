@@ -10,4 +10,5 @@ server:
 logging:
   level:
     root: INFO
-    com.czjtu: DEBUG
+    "[com.czjtu]": DEBUG
+
