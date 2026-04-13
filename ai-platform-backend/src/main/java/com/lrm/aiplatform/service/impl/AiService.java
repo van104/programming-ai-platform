@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lrm.aiplatform.entity.AiRecord;
 import com.lrm.aiplatform.mapper.AiRecordMapper;
+import com.lrm.aiplatform.service.IUserService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class AiService {
     private final AiRecordMapper aiRecordMapper;
     private final LearningProfileService learningProfileService;
     private final RestTemplate restTemplate;
+    private final IUserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${zhipu.api.key}")
@@ -34,10 +36,12 @@ public class AiService {
 
     public AiService(AiRecordMapper aiRecordMapper,
             LearningProfileService learningProfileService,
-            RestTemplate restTemplate) {
+            RestTemplate restTemplate,
+            IUserService userService) {
         this.aiRecordMapper = aiRecordMapper;
         this.learningProfileService = learningProfileService;
         this.restTemplate = restTemplate;
+        this.userService = userService;
     }
 
     public String askAi(Long userId, String question) {
@@ -106,6 +110,9 @@ public class AiService {
      * 返回：总次数 + 每天的使用次数
      */
     public Map<String, Object> getWeeklyFrequency(Long userId) {
+        if (userService.getById(userId) == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
         LocalDate today = LocalDate.now();
         LocalDate weekAgo = today.minusDays(6); // 包含今天共7天
         LocalDateTime startTime = weekAgo.atStartOfDay();

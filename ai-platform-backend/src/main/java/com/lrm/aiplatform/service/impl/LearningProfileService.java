@@ -11,6 +11,7 @@ import com.lrm.aiplatform.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 
@@ -44,6 +45,12 @@ public class LearningProfileService {
         Long submitCountLong = submissionMapper.selectCount(new QueryWrapper<Submission>().eq("user_id", userId));
         int submitCount = Math.toIntExact(submitCountLong);
 
+        // 去重题目数（按 exercise_id 去重）
+        List<Submission> submissions = submissionMapper.selectList(
+                new QueryWrapper<Submission>().eq("user_id", userId).select("DISTINCT exercise_id")
+        );
+        int distinctExerciseCount = submissions.size();
+
 
         String level;
         if (aiCount + submitCount >= 10) {
@@ -65,6 +72,7 @@ public class LearningProfileService {
             profile.setUserId(userId);
             profile.setAiUsageCount(aiCount);
             profile.setSubmissionCount(submitCount);
+            profile.setDistinctExerciseCount(distinctExerciseCount);
             profile.setActivityLevel(level);
             profile.setCreateTime(now);
             profile.setUpdateTime(now);
@@ -73,10 +81,12 @@ public class LearningProfileService {
             // 存在，判断是否有变化再决定是否更新
             boolean changed = !profile.getAiUsageCount().equals(aiCount)
                     || !profile.getSubmissionCount().equals(submitCount)
+                    || !Integer.valueOf(distinctExerciseCount).equals(profile.getDistinctExerciseCount())
                     || !level.equals(profile.getActivityLevel());
             if (changed) {
                 profile.setAiUsageCount(aiCount);
                 profile.setSubmissionCount(submitCount);
+                profile.setDistinctExerciseCount(distinctExerciseCount);
                 profile.setActivityLevel(level);
                 profile.setUpdateTime(now);
                 profileMapper.updateById(profile);

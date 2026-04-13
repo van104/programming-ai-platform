@@ -18,6 +18,8 @@ public class LearningProfile {
 
     private Integer submissionCount;
 
+    private Integer distinctExerciseCount;
+
     private String activityLevel;
 
     private LocalDateTime createTime;

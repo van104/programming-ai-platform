@@ -3,6 +3,7 @@ package com.lrm.aiplatform.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lrm.aiplatform.entity.Submission;
 import com.lrm.aiplatform.mapper.SubmissionMapper;
+import com.lrm.aiplatform.service.IUserService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,10 +17,14 @@ public class SubmissionService {
 
     private final SubmissionMapper submissionMapper;
     private final LearningProfileService learningProfileService;
+    private final IUserService userService;
 
-    public SubmissionService(SubmissionMapper submissionMapper, LearningProfileService learningProfileService) {
+    public SubmissionService(SubmissionMapper submissionMapper,
+                             LearningProfileService learningProfileService,
+                             IUserService userService) {
         this.submissionMapper = submissionMapper;
         this.learningProfileService = learningProfileService;
+        this.userService = userService;
     }
 
     public void submitCode(Submission submission) {
@@ -48,6 +53,9 @@ public class SubmissionService {
      * 获取学生做练习题的数量
      */
     public Map<String, Object> getExerciseCount(Long userId) {
+        if (userService.getById(userId) == null) {
+            throw new IllegalArgumentException("用户不存在");
+        }
         QueryWrapper<Submission> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userId);
 
