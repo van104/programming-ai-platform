@@ -1,4 +1,9 @@
 package com.lrm.aiplatform.mapper;
 
-public interface SubmissionMapper {
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lrm.aiplatform.entity.Submission;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface SubmissionMapper extends BaseMapper<Submission> {
 }

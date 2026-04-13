@@ -1,14 +1,21 @@
-spring:
-  application:
-    name: ai-platform-backend
-  profiles:
-    active: dev
-
 server:
   port: 8080
 
-logging:
-  level:
-    root: INFO
-    "[com.czjtu]": DEBUG
+spring:
+  application:
+    name: ai-platform-backend
+  datasource:
+    url: jdbc:mysql://localhost:3306/ai_platform_db?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: van
+    password: lrm0405
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+zhipu:
+  api:
+    key: 150e4a90fa784adda37d0c9c86bc0aeb.nEqCXIWujZJN5kiB
+    url: https://open.bigmodel.cn/api/paas/v4/chat/completions
+    model: glm-4.7

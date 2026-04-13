@@ -26,7 +26,8 @@ export default {
       axios
         .get("http://localhost:8080/hello")
         .then((res) => {
-          this.msg = res.data;
+          this.msg = res.data.data;
+          console.log(res.data);
         })
         .catch((error) => {
           console.error("请求失败:", error);
