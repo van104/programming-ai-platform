@@ -62,7 +62,7 @@ public class LearningProfileService {
         }
 
         // 2. 检查学习档案是否已存在
-        LearningProfile profile = profileMapper.selectOne(new QueryWrapper<LearningProfile>().eq("user_id", userId));
+        LearningProfile profile = profileMapper.selectOne(new QueryWrapper<LearningProfile>().eq("user_id", userId).last("LIMIT 1"));
 
         LocalDateTime now = LocalDateTime.now();
 

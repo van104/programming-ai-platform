@@ -36,4 +36,22 @@ public class GlobalExceptionHandler {
     public Result<Object> handleIllegalArgumentException(IllegalArgumentException e) {
         return new Result<>(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
+
+    /**
+     * 处理运行时异常（如 AI 服务调用失败等）
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result<Object> handleRuntimeException(RuntimeException e) {
+        return new Result<>(500, "服务异常: " + e.getMessage(), null);
+    }
+
+    /**
+     * 兜底异常处理器，捕获所有未被上面处理的异常
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Result<Object> handleException(Exception e) {
+        return new Result<>(500, "服务器内部错误: " + e.getMessage(), null);
+    }
 }

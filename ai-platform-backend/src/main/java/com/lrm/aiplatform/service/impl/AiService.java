@@ -49,14 +49,16 @@ public class AiService {
         try {
             aiAnswer = callZhipuApi(question);
         } catch (Exception e) {
-            aiAnswer = "【AI服务异常】" + e.getMessage();
+            // 异常时不插入记录，避免污染统计数据
+            throw new RuntimeException("AI服务异常：" + e.getMessage(), e);
         }
 
-        // 保存记录
+        // 保存记录（仅成功时）
         AiRecord record = new AiRecord();
         record.setUserId(userId);
         record.setQuestion(question);
         record.setAiAnswer(aiAnswer);
+        record.setCreateTime(LocalDateTime.now());
         aiRecordMapper.insert(record);
 
         // 实时更新学习档案

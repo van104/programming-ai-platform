@@ -20,8 +20,8 @@ public class SubmissionService {
     private final IUserService userService;
 
     public SubmissionService(SubmissionMapper submissionMapper,
-                             LearningProfileService learningProfileService,
-                             IUserService userService) {
+            LearningProfileService learningProfileService,
+            IUserService userService) {
         this.submissionMapper = submissionMapper;
         this.learningProfileService = learningProfileService;
         this.userService = userService;
@@ -43,8 +43,8 @@ public class SubmissionService {
         if (submission.getSubmitTime() == null) {
             submission.setSubmitTime(LocalDateTime.now());
         }
-        submissionMapper.insert(submission);
 
+        submissionMapper.insert(submission);
         // 实时更新学习档案
         learningProfileService.generateProfile(submission.getUserId());
     }
@@ -79,4 +79,4 @@ public class SubmissionService {
 
         return result;
     }
-}
+}
