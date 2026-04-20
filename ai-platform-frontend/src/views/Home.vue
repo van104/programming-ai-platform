@@ -1,65 +1,49 @@
 <template>
-  <div class="centered-container">
-    <h2>{{ msg }}</h2>
-    <template v-if="!msg">
-      <h2>AI Programming Teaching Platform</h2>
-      <button @click="loadData">测试后端接口</button>
-    </template>
-
-    <template v-else>
-      <button @click="backToHome">返回首页</button>
-    </template>
+  <div>
+    <h2>用户列表测试</h2>
+    <button @click="load">加载用户</button>
+    <div v-for="item in list" :key="item.id">
+      {{ item.username }}
+    </div>
   </div>
 </template>
 
 <script>
-import axios from "axios";
+import { getUserList } from '@/api/user'
 
 export default {
   data() {
     return {
-      msg: "",
-    };
+      list: []
+    }
   },
-  methods: {
-    loadData() {
-      axios
-        .get("http://localhost:8080/hello")
-        .then((res) => {
-          this.msg = res.data.data;
-          console.log(res.data);
-        })
-        .catch((error) => {
-          console.error("请求失败:", error);
-          this.msg = "连接后端接口失败，请检查后端服务是否启动。";
-        });
-    },
 
-    backToHome() {
-      this.msg = "";
-    },
-  },
-};
+  methods: {
+    async load() {
+      try {
+        this.list = await getUserList()
+      } catch (error) {
+        console.error('加载用户失败:', error)
+      }
+    }
+  }
+}
 </script>
 
 <style scoped>
-.centered-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
 h2 {
-  text-align: center;
+  color: #333;
+}
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   margin-bottom: 20px;
 }
-
-button {
-  display: block;
-  margin-top: 10px;
-  padding: 8px 16px;
-  cursor: pointer;
+button:hover {
+  background-color: #45a049;
 }
 </style>

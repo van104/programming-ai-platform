@@ -76,4 +76,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         this.save(user);
         return null; // null 表示成功，没有错误信息
     }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userMapper.selectList(null); // 查询所有用户
+    }
 }

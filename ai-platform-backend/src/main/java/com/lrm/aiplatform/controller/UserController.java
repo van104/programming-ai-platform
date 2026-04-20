@@ -16,6 +16,7 @@ import java.util.List;
  * @since 2026-03-16
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/user")
 public class UserController {
 
@@ -84,5 +85,14 @@ public class UserController {
              user.setPassword(null);
         }
         return Result.success("角色查询成功", users);
+    }
+
+    /**
+     * 获取用户列表 (第2天新增)
+     */
+    @GetMapping("/list")
+    public Result<List<User>> getUserList() {
+        List<User> users = userService.getAllUsers();
+        return Result.success("获取成功", users);
     }
 }

@@ -36,6 +36,7 @@ target/
 build/
 out/
 *.local
+docs/讲义
 
 # Environment variables
 .env

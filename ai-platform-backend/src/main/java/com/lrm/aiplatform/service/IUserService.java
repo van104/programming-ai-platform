@@ -20,4 +20,6 @@ public interface IUserService extends IService<User> {
     List<User> getUsersByRole(String role);
 
     String register(User user);
+
+    List<User> getAllUsers();
 }
