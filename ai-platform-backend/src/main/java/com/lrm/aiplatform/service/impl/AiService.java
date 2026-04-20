@@ -3,10 +3,10 @@ package com.lrm.aiplatform.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lrm.aiplatform.config.ZhipuProperties;
 import com.lrm.aiplatform.entity.AiRecord;
 import com.lrm.aiplatform.mapper.AiRecordMapper;
 import com.lrm.aiplatform.service.IUserService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,23 +25,18 @@ public class AiService {
     private final IUserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${zhipu.api.key}")
-    private String apiKey;
-
-    @Value("${zhipu.api.url}")
-    private String apiUrl;
-
-    @Value("${zhipu.api.model}")
-    private String model;
+    private final ZhipuProperties zhipuProperties;
 
     public AiService(AiRecordMapper aiRecordMapper,
             LearningProfileService learningProfileService,
             RestTemplate restTemplate,
-            IUserService userService) {
+            IUserService userService,
+            ZhipuProperties zhipuProperties) {
         this.aiRecordMapper = aiRecordMapper;
         this.learningProfileService = learningProfileService;
         this.restTemplate = restTemplate;
         this.userService = userService;
+        this.zhipuProperties = zhipuProperties;
     }
 
     public String askAi(Long userId, String question) {
@@ -71,11 +66,11 @@ public class AiService {
         // 构建请求头
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + apiKey);
+        headers.set("Authorization", "Bearer " + zhipuProperties.getApi().getKey());
 
         // 构建请求体
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", model);
+        requestBody.put("model", zhipuProperties.getApi().getModel());
 
         // system prompt：定义 AI 角色为编程助教
         Map<String, String> systemMessage = new HashMap<>();
@@ -92,7 +87,8 @@ public class AiService {
 
         // 发送请求
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
-        ResponseEntity<String> response = restTemplate.exchange(apiUrl, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(
+                Objects.requireNonNull(zhipuProperties.getApi().getUrl()), Objects.requireNonNull(HttpMethod.POST), entity, String.class);
 
         // 解析响应
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
