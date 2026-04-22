@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "frontend": "npm run dev --prefix ai-platform-frontend",
-    "backend": "mvnw spring-boot:run --prefix ai-platform-backend",
+    "backend": "cd ai-platform-backend && mvnw.cmd spring-boot:run",
     "dev": "concurrently \"npm run frontend\" \"npm run backend\""
   },
   "devDependencies": {

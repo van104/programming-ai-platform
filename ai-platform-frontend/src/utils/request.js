@@ -7,7 +7,7 @@ const request = axios.create({
 })
 
 /**
- * 请求拦截器
+ * 请求拦截器interceptors
  * 作用：自动携带 Token
  */
 request.interceptors.request.use(config => {
