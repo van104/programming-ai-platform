@@ -1,6 +1,7 @@
 package com.lrm.aiplatform.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.lrm.aiplatform.utils.MD5Util;
 import com.lrm.aiplatform.entity.User;
 import com.lrm.aiplatform.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -35,7 +36,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             return null;
         }
 
-        if (!user.getPassword().equals(password)) {
+        // 对输入的密码进行MD5加密后对比
+        if (!user.getPassword().equals(MD5Util.encrypt(password))) {
             return null;
         }
 
@@ -72,6 +74,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (user.getCreateTime() == null) {
             user.setCreateTime(java.time.LocalDateTime.now());
         }
+
+        // MD5加密密码
+        user.setPassword(MD5Util.encrypt(user.getPassword()));
 
         this.save(user);
         return null; // null 表示成功，没有错误信息

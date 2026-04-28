@@ -1,5 +1,10 @@
 <template>
   <div class="container">
+    <!-- 头部导航 -->
+    <div class="header">
+      <button class="logout-btn" @click="logout">退出登录</button>
+    </div>
+    
     <h2>用户列表测试</h2>
     <button @click="load">加载用户</button>
     <div v-for="item in list" :key="item.id" class="user-item">
@@ -15,13 +20,13 @@
     <button @click="delUserById(deleteId)">删除用户</button>
 
     <hr />
-    <h2>获取用户数据测试</h2>
+    <h2>获取用户数据画像</h2>
     <input
       v-model="userId"
       placeholder="输入用户ID"
       style="margin: 10px 0; padding: 5px; width: 180px"
     />
-    <button @click="getUserData(userId)">获取用户数据</button>
+    <button @click="getUserData(userId)">获取画像</button>
     <div v-if="userData">
       <h3>用户画像</h3>
       <p>AI 使用次数: {{ userData.profile.aiUsageCount }}</p>
@@ -32,8 +37,8 @@
 </template>
 
 <script>
-import { getUserList, delUserById  } from "@/api/user";
-import { getUserData as apiGetUserData } from "@/api/learningprofile";
+import { getUserList, delUserById as apiDelUserById } from "@/api/user";/*as 别名导入*/
+import { getUserData } from "@/api/learningprofile";
 
 export default {
   data() {
@@ -60,7 +65,7 @@ export default {
         return;
       }
       try {
-        await delUserById(id);
+        await apiDelUserById(id);
         alert('删除成功');
         this.deleteId = '';
         this.list = await getUserList();
@@ -76,11 +81,19 @@ export default {
         return;
       }
       try {
-        this.userData = await apiGetUserData(id);
+        this.userData = await getUserData(id);
+        console.log(this.userData);
       } catch (error) {
         console.error('获取用户数据失败:', error);
         alert('获取用户数据失败，请检查ID是否正确');
       }
+    },
+
+    logout() {
+      // 清除 token
+      localStorage.removeItem('token');
+      // 跳转到登录页面
+      this.$router.push('/login');
     },
   },
 };
@@ -121,5 +134,20 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+
+.header {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+}
+
+.logout-btn {
+  background-color: #f44336;
+  margin-bottom: 0;
+}
+
+.logout-btn:hover {
+  background-color: #d32f2f;
 }
 </style>

@@ -1,0 +1,112 @@
+=== Vue 前端常见问题与模式 ===
+
+1. 在 Vue 组件 methods 中添加方法
+   - 方法定义在 export default { methods: { ... } } 内部
+   - 使用 async/await 处理异步操作
+   - 例: Home.vue 中的 load(), delUserById(), getUserData()
+
+2. Vue Router 使用流程
+   a. main.js: import router → app.use(router) → mount
+   b. App.vue: <router-view />（替代直接引入 Home 组件）
+   c. router/index.js: 定义 routes 数组 → createRouter → export default
+   d. 路由跳转: this.$router.push('/home')
+
+3. API 模块化（统一管理请求）
+   - 每个 API 文件统一 export function，如:
+     export function getUserList() { return request({...}) }
+   - 在组件中 import { getUserList } from "@/api/user"
+   - 形参（函数定义处）vs 实参（调用时传入）
+
+4. import 别名（as）
+   - 场景：函数名与组件内方法名冲突
+   - 例: import { delUserById as apiDelUserById } from "@/api/user"
+   - 方法名 delUserById()，内部调用 apiDelUserById()
+
+5. axios 封装（utils/request.js）
+   - 创建 axios 实例，配置 baseURL、timeout
+   - 请求拦截器：自动从 localStorage 获取 token 附加到 headers
+   - 响应拦截器：直接返回 response.data.data（简化组件调用）
+
+6. 模板字符串（反引号 `）
+   - 用于在字符串中嵌入变量: `user/delete/${id}`
+   - 替代字符串拼接，更简洁
+
+7. 登录流程（Login.vue）
+   - 调用 loginApi 发送 POST 请求
+   - 成功后 token 存入 localStorage
+   - 跳转至 /home: this.$router.push('/home')
+
+8. 用户数据画像（Home.vue）
+   - 输入用户ID → 调用 getUserData()
+   - 显示 AI使用次数、提交次数、活跃度
+
+9. 前端给后端传参的三种方式
+   (1) 路径参数（RESTful 风格）
+       - 前端: url: `user/delete/${id}`  →  DELETE /user/delete/3
+       - 后端: @DeleteMapping("/delete/{id}") + @PathVariable Long id
+       - 场景: 单个标识符传参（删除、查询单个）
+       - 具体 url: http://localhost:8080/user/delete/{id}
+                    http://localhost:8080/profile/full/{userId}
+
+   (2) 传统查询参数（Query String）
+       - 前端: params: { username, password }  →  POST /login?username=xx&password=xx
+       - 后端: @RequestParam String username
+       - 场景: 简单查询条件、少量参数
+       - 具体 url: http://localhost:8080/login?username=xxx&password=xxx
+
+   (3) RequestBody（JSON 请求体）
+       - 前端: axios 直接传对象（method: post 时默认放 data）
+       - 后端: @RequestBody User user（对象接收）
+       - 场景: 复杂对象、新增/更新数据
+       - 具体 url: http://localhost:8080/user/add
+                    http://localhost:8080/user/update
+       - 请求体示例: { "username":"test", "password":"123", "role":"student" }
+       - 后端: @RequestBody User user（对象接收）
+       - 场景: 复杂对象、新增/更新数据
+
+//    async login1() {
+//      try {
+//        const user = await login1Api(
+//            this.username,
+//            this.password
+//        )
+//        if (!user) {
+//          alert("用户名或密码错误")
+//          return
+//        }
+//        localStorage.setItem('token', user.id)
+//        this.$router.push('/home')
+//      } catch (error) {
+//        alert("登录失败，请检查服务器")
+//      }
+//    },
+//    async login2() {
+//      try {
+//        const user = await login2Api(
+//            this.username,
+//            this.password
+//        )
+//        if (!user) {
+//          alert("用户名或密码错误")
+//          return
+//        }
+//        localStorage.setItem('token', user.id)
+//        this.$router.push('/home')
+//      } catch (error) {
+//        alert("登录失败，请检查服务器")
+//      }
+//    }
+
+=== Java Spring Boot 后端问题 ===
+
+9. MD5 密码加密
+   - 注册时: user.setPassword(MD5Util.encrypt(password))
+   - 登录时: 对输入的密码 MD5 加密后与数据库对比
+   - 返回用户信息时: 密码也要 MD5 加密返回（之前是设 null）
+   - 更新用户时: 传入密码也要加密再存
+
+10. 登录接口调整
+    - 登录成功返回加密后的密码（之前返回 null，前端可能需要）
+    - Result 封装统一返回格式: code, msg, data
+
+功能扩展：使用token ;添加路由守卫

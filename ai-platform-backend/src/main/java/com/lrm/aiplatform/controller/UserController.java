@@ -1,6 +1,9 @@
 package com.lrm.aiplatform.controller;
 
+import com.lrm.aiplatform.utils.JwtUtil;
+import com.lrm.aiplatform.utils.MD5Util;
 import com.lrm.aiplatform.common.Result;
+import com.lrm.aiplatform.dto.LoginDTO;
 import com.lrm.aiplatform.entity.User;
 import com.lrm.aiplatform.service.IUserService;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +24,11 @@ import java.util.List;
 public class UserController {
 
     private final IUserService userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(IUserService userService) {
+    public UserController(IUserService userService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.jwtUtil = jwtUtil;
     }
 
     //添加用户
@@ -46,6 +51,9 @@ public class UserController {
     //更新用户
     @PutMapping("/update")
     public Result<String> updateUser(@RequestBody User user) {
+        if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
+            user.setPassword(MD5Util.encrypt(user.getPassword()));
+        }
         userService.updateById(user);
         return Result.success("用户更新成功", null);
     }
@@ -64,25 +72,47 @@ public class UserController {
         return Result.success("用户查询成功", userList);
     }
 
-    //登陆
+    //登陆RequestBody（JSON 请求体）
     @PostMapping("/login")
-    public Result<User> login(@RequestBody User loginUser) {
+    public Result<LoginDTO> login(@RequestBody User loginUser) {
         User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
         if (user == null) {
             return new Result<>(401, "用户名或密码错误", null);
         }
-        // 不返回密码给前端
-        user.setPassword(null);
-        return Result.success("登录成功", user);
+        String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole());
+        LoginDTO loginDTO = new LoginDTO(user.getId(), user.getUsername(), token);
+        return Result.success("登录成功", loginDTO);
     }
+//    //路径参数（RESTful 风格）
+//    @PostMapping("/login1/{username}/{password}")
+//    public Result<User> login1(@PathVariable String username, @PathVariable String password) {
+//        User user = userService.login(username, password);
+//        if (user == null) {
+//            return new Result<>(401, "用户名或密码错误", null);
+//        }
+//        // MD5加密返回
+//        user.setPassword(MD5Util.encrypt(user.getPassword()));
+//        return Result.success("登录成功", user);
+//    }
+//
+//    //传统查询参数（Query String）
+//    @PostMapping("/login2")
+//    public Result<User> login2(@RequestParam String username, @RequestParam String password) {
+//        User user = userService.login(username, password);
+//        if (user == null) {
+//            return new Result<>(401, "用户名或密码错误", null);
+//        }
+//        user.setPassword(MD5Util.encrypt(user.getPassword()));
+//        return Result.success("登录成功", user);
+//    }
 
     //根据角色查询用户
     @GetMapping("/role/{role}")
     public Result<List<User>> getUsersByRole(@PathVariable String role) {
         List<User> users = userService.getUsersByRole(role);
-        // 不返回密码给前端
+        // MD5加密返回
         for (User user : users) {
-             user.setPassword(null);
+             user.setPassword(MD5Util.encrypt(user.getPassword()));
         }
         return Result.success("角色查询成功", users);
     }

@@ -14,6 +14,10 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
+jwt:
+  secret: aWxvdmVwcm9ncmFtbWluZ2FuZHNlY3VyaXR5Zm9yZXZlcg==
+  expiration: 86400000
+
 zhipu:
   api:
     key: ${ZHIPU_API_KEY:150e4a90fa784adda37d0c9c86bc0aeb.nEqCXIWujZJN5kiB}
