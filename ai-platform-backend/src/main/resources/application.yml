@@ -15,7 +15,8 @@ mybatis-plus:
     map-underscore-to-camel-case: true
 
 jwt:
-  secret: aWxvdmVwcm9ncmFtbWluZ2FuZHNlY3VyaXR5Zm9yZXZlcg==
+  #czjtu_ai_platform_secret_key_2026->base64 编码
+  secret: Y3pqdHVfYWlfcGxhdGZvcm1fc2VjcmV0X2tleV8yMDI2
   expiration: 86400000
 
 zhipu:
