@@ -2,6 +2,8 @@
   <div class="container">
     <!-- 头部导航 -->
     <div class="header">
+      <button class="stat-btn" @click="$router.push('/stat')">数据统计</button>
+      <button class="ai-btn" @click="$router.push('/ai-chat')">AI 助教</button>
       <button class="logout-btn" @click="logout">退出登录</button>
     </div>
     
@@ -149,5 +151,25 @@ button:hover {
 
 .logout-btn:hover {
   background-color: #d32f2f;
+}
+
+.ai-btn {
+  background-color: #409eff;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.ai-btn:hover {
+  background-color: #337ecc;
+}
+
+.stat-btn {
+  background-color: #67c23a;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.stat-btn:hover {
+  background-color: #529b2e;
 }
 </style>

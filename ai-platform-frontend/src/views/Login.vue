@@ -50,6 +50,7 @@ export default {
         }
         localStorage.setItem('token', data.token)
         localStorage.setItem('username', data.username)
+        localStorage.setItem('userId', data.id)
         this.$router.push('/home')
         // 跳转到首页
       } catch (error) {
