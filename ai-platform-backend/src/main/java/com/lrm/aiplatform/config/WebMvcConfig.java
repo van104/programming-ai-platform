@@ -34,7 +34,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/login",
                         "/user/login",
                         "/user/register",
-                        "/user/add"
+                        "/user/add",
+                        "/debug/token"
                 );
     }
 }

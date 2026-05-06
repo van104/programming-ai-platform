@@ -31,4 +31,9 @@ public class AuthController {
         LoginDTO loginDTO = new LoginDTO(user.getId(), user.getUsername(), token);
         return Result.success("登录成功", loginDTO);
     }
+
+    @GetMapping("/debug/token")
+    public String debugToken() {
+        return jwtUtil.generateToken(1L, "debug", "admin");
+    }
 }

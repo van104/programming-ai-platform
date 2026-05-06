@@ -26,21 +26,26 @@ public class JwtInterceptor implements HandlerInterceptor {
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             return true;
         }
-
+        // 1. 从请求头获取token
         String token = extractToken(request);
 
+        // 2. 调用validateToken快速验证
         if (token == null || !jwtUtil.validateToken(token)) {
+            // 令牌无效 → 拦截请求，返回401未授权
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(401);
             response.getWriter().write("{\"code\":401,\"message\":\"未登录或token已过期\",\"data\":null}");
             return false;
         }
-
+        // 1. 解析Token，获取载荷（用户信息）
         Claims claims = jwtUtil.parseToken(token);
+        // 2. 将用户ID存入请求域
         request.setAttribute("userId", claims.get("userId", Long.class));
+        // 3. 将用户名存入请求域（两种取值方式等价）
         request.setAttribute("username", claims.getSubject());
+        // 4. 将用户角色存入请求域
         request.setAttribute("role", claims.get("role", String.class));
-
+        // 令牌有效 → 放行请求
         return true;
     }
 

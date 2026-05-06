@@ -37,6 +37,7 @@ build/
 out/
 *.local
 docs/讲义
+/docs
 
 # Environment variables
 .env

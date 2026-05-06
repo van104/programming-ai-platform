@@ -19,10 +19,12 @@ request.interceptors.request.use(config => {
 // ========== 响应拦截器 ==========
 request.interceptors.response.use(response => {
   const body = response.data
-  // 后端返回的 code 是 401，说明 token 过期或无效
+  // 后端返回 code=401：登录接口说明账号密码错误，其他接口说明 token 过期
   if (body.code === 401) {
-    localStorage.removeItem('token')
-    router.push('/login')
+    if (!response.config.url.includes('/login')) {
+      localStorage.removeItem('token')
+      router.push('/login')
+    }
     return Promise.reject(new Error(body.message || '未登录'))
   }
   // 正常情况：直接返回 data 字段，组件不用关心 code 和 message

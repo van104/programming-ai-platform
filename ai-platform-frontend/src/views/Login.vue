@@ -53,7 +53,7 @@ export default {
         this.$router.push('/home')
         // 跳转到首页
       } catch (error) {
-        alert('登录失败，请检查服务器')
+        alert(error.message || '登录失败')
       }
     },
   }

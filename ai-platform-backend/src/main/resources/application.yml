@@ -17,6 +17,7 @@ mybatis-plus:
 jwt:
   #czjtu_ai_platform_secret_key_2026->base64 编码
   secret: Y3pqdHVfYWlfcGxhdGZvcm1fc2VjcmV0X2tleV8yMDI2
+  #1天过期（毫秒）
   expiration: 86400000
 
 zhipu:
