@@ -4,6 +4,7 @@ import Home from '@/views/Home.vue'
 import AiChat from '@/views/AiChat.vue'
 import Stat from '@/views/Stat.vue'
 import User from '@/views/User.vue'
+import Teacher from '@/views/Teacher.vue'
 
 //路由守卫的作用：在页面跳转之前检查是否有 token，没有就踢回登录页。
 const routes = [
@@ -38,6 +39,12 @@ const routes = [
     path: '/users',
     name: 'User',
     component: User,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/teacher',
+    name: 'Teacher',
+    component: Teacher,
     meta: { requiresAuth: true }
   }
 ]

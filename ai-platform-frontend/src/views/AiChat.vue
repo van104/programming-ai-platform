@@ -3,7 +3,6 @@
     <!-- 头部导航 -->
     <div class="header">
       <button class="back-btn" @click="$router.push('/home')">返回首页</button>
-      <button class="logout-btn" @click="logout">退出登录</button>
     </div>
 
     <!-- 标题 -->
@@ -81,13 +80,6 @@ export default {
       if (el) {
         el.scrollTop = el.scrollHeight
       }
-    },
-
-    logout() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('userId')
-      this.$router.push('/login')
     }
   }
 }
@@ -127,20 +119,6 @@ export default {
   background-color: #337ecc;
 }
 
-.logout-btn {
-  padding: 8px 16px;
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-  background-color: #d32f2f;
-}
 
 h2 {
   color: #333;

@@ -118,6 +118,7 @@ public class TeacherAnalyticsService {
      * 获取所有学生的学习画像列表
      */
     public List<LearningProfile> getAllStudentProfiles() {
-        return learningProfileMapper.selectList(null);
+        return learningProfileMapper.selectList(
+                new QueryWrapper<LearningProfile>().orderByAsc("user_id"));
     }
 }

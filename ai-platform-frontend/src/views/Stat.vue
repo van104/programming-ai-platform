@@ -2,8 +2,7 @@
   <div class="stat-container">
     <!-- 头部导航 -->
     <div class="header">
-      <button class="ai-btn" @click="$router.push('/ai-chat')">AI 助教</button>
-      <button class="logout-btn" @click="logout">退出登录</button>
+      <button class="back-btn" @click="$router.push('/home')">返回首页</button>
     </div>
 
     <h2>学习数据统计</h2>
@@ -22,8 +21,6 @@
         <div class="stat-label">代码提交次数</div>
       </div>
     </div>
-
-    <button class="back-btn" @click="$router.push('/home')">返回首页</button>
   </div>
 </template>
 
@@ -69,15 +66,6 @@ export default {
     } catch (error) {
       console.error('加载统计数据失败:', error)
     }
-  },
-
-  methods: {
-    logout() {
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-      localStorage.removeItem('userId')
-      this.$router.push('/login')
-    }
   }
 }
 </script>
@@ -97,36 +85,6 @@ export default {
   right: 20px;
   display: flex;
   gap: 10px;
-}
-
-.ai-btn {
-  padding: 8px 16px;
-  background-color: #409eff;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
-
-.ai-btn:hover {
-  background-color: #337ecc;
-}
-
-.logout-btn {
-  padding: 8px 16px;
-  background-color: #f44336;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
-}
-
-.logout-btn:hover {
-  background-color: #d32f2f;
 }
 
 h2 {

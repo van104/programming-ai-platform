@@ -2,6 +2,7 @@
   <div class="container">
     <!-- 头部导航 -->
     <div class="header">
+      <button class="teacher-btn" @click="$router.push('/teacher')">教学中心</button>
       <button class="user-btn" @click="$router.push('/users')">用户管理</button>
       <button class="stat-btn" @click="$router.push('/stat')">数据统计</button>
       <button class="ai-btn" @click="$router.push('/ai-chat')">AI 助教</button>
@@ -14,7 +15,7 @@
       {{ item.id }}: {{ item.username }}
     </div>
 
-
+    <h2>删除用户</h2>
     <input
       v-model="deleteId"
       placeholder="输入ID删除用户"
@@ -182,5 +183,15 @@ button:hover {
 
 .user-btn:hover {
   background-color: #cf9236;
+}
+
+.teacher-btn {
+  background-color: #9b59b6;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.teacher-btn:hover {
+  background-color: #8e44ad;
 }
 </style>
