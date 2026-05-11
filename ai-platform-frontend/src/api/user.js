@@ -1,11 +1,11 @@
 import request from "@/utils/request";
 
 /**
- * 获取用户列表
+ * 获取用户列表 (第4天版)
  */
 export function getUserList() {
   return request({
-    url: "user/query/all",
+    url: "/user/list",
     method: "get",
   });
 }
@@ -19,6 +19,3 @@ export function delUserById(id) {
     method: "delete",
   });
 }
-/**
- * 反引号``，用于包裹字符串，表示这是一个模板字符串，可以包含变量和表达式
- */

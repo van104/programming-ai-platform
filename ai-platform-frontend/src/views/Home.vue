@@ -2,6 +2,7 @@
   <div class="container">
     <!-- 头部导航 -->
     <div class="header">
+      <button class="user-btn" @click="$router.push('/users')">用户管理</button>
       <button class="stat-btn" @click="$router.push('/stat')">数据统计</button>
       <button class="ai-btn" @click="$router.push('/ai-chat')">AI 助教</button>
       <button class="logout-btn" @click="logout">退出登录</button>
@@ -171,5 +172,15 @@ button:hover {
 
 .stat-btn:hover {
   background-color: #529b2e;
+}
+
+.user-btn {
+  background-color: #e6a23c;
+  margin-bottom: 0;
+  margin-right: 10px;
+}
+
+.user-btn:hover {
+  background-color: #cf9236;
 }
 </style>
