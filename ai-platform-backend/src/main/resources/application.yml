@@ -20,8 +20,10 @@ jwt:
   #1天过期（毫秒）
   expiration: 86400000
 
-zhipu:
+deepseek:
   api:
-    key: ${ZHIPU_API_KEY:150e4a90fa784adda37d0c9c86bc0aeb.nEqCXIWujZJN5kiB}
-    url: https://open.bigmodel.cn/api/paas/v4/chat/completions
-    model: glm-4.7
+    # 优先使用环境变量 DEEPSEEK_API_KEY，不存在则使用下方默认值（仅开发环境）
+    key: ${DEEPSEEK_API_KEY:sk-d630d2ca730f4d289c6d41649078d591}
+    url: https://api.deepseek.com/v1/chat/completions
+    model: deepseek-v4-flash
+    mock: false

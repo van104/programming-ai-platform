@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-@ConfigurationProperties(prefix = "zhipu")
-public class ZhipuProperties {
+@ConfigurationProperties(prefix = "deepseek")
+public class DeepSeekProperties {
     private Api api = new Api();
 
     @Data
@@ -15,5 +15,6 @@ public class ZhipuProperties {
         private String key;
         private String url;
         private String model;
+        private boolean mock = false;
     }
 }

@@ -44,6 +44,7 @@
 import { getUserList, delUserById as apiDelUserById } from "@/api/user";/*as 别名导入*/
 import { getUserData } from "@/api/learningprofile";
 
+
 export default {
   data() {
     return {
@@ -55,6 +56,7 @@ export default {
   },
 
   methods: {
+
     async load() {
       try {
         this.list = await getUserList();

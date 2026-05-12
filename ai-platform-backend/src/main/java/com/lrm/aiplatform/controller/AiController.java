@@ -15,10 +15,35 @@ public class AiController {
         this.aiService = aiService;
     }
 
+    /** 真实ai对话接口 */
     @PostMapping("/ai/ask")
     public Result<String> askAi(@RequestParam Long userId,
                                 @RequestParam String question) {
         String answer = aiService.askAi(userId, question);
+        return Result.success("AI响应成功", answer);
+    }
+
+    /** 真实ai分析接口：调用 DeepSeek 分析代码 */
+    @PostMapping("/ai/analyze")
+    public Result<String> analyzeCode(@RequestParam Long userId,
+                                      @RequestParam String code) {
+        String result = aiService.analyzeCode(userId, code);
+        return Result.success("代码分析完成", result);
+    }
+
+    /** 模拟接口：不调 AI，直接返回固定结果 */
+    @PostMapping("/ai/analyze/mock")
+    public Result<String> analyzeCodeMock(@RequestParam Long userId,
+                                          @RequestParam String code) {
+        String result = aiService.analyzeCode(userId, code, true);
+        return Result.success("模拟分析完成", result);
+    }
+
+    /** 模拟接口：AI 对话 mock */
+    @PostMapping("/ai/ask/mock")
+    public Result<String> askAiMock(@RequestParam Long userId,
+                                    @RequestParam String question) {
+        String answer = aiService.askAi(userId, question, true);
         return Result.success("AI响应成功", answer);
     }
 

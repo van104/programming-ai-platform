@@ -3,9 +3,11 @@ package com.lrm.aiplatform.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lrm.aiplatform.config.ZhipuProperties;
+import com.lrm.aiplatform.config.DeepSeekProperties;
 import com.lrm.aiplatform.entity.AiRecord;
+import com.lrm.aiplatform.entity.Submission;
 import com.lrm.aiplatform.mapper.AiRecordMapper;
+import com.lrm.aiplatform.mapper.SubmissionMapper;
 import com.lrm.aiplatform.service.IUserService;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -20,77 +22,124 @@ import java.util.*;
 public class AiService {
 
     private final AiRecordMapper aiRecordMapper;
+    private final SubmissionMapper submissionMapper;
     private final LearningProfileService learningProfileService;
     private final RestTemplate restTemplate;
     private final IUserService userService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final ZhipuProperties zhipuProperties;
+    private final DeepSeekProperties deepSeekProperties;
 
     public AiService(AiRecordMapper aiRecordMapper,
+            SubmissionMapper submissionMapper,
             LearningProfileService learningProfileService,
             RestTemplate restTemplate,
             IUserService userService,
-            ZhipuProperties zhipuProperties) {
+            DeepSeekProperties deepSeekProperties) {
         this.aiRecordMapper = aiRecordMapper;
+        this.submissionMapper = submissionMapper;
         this.learningProfileService = learningProfileService;
         this.restTemplate = restTemplate;
         this.userService = userService;
-        this.zhipuProperties = zhipuProperties;
+        this.deepSeekProperties = deepSeekProperties;
     }
 
     public String askAi(Long userId, String question) {
+        return askAi(userId, question, deepSeekProperties.getApi().isMock());
+    }
+
+    public String askAi(Long userId, String question, boolean mock) {
+        return callAiWithPrompt(userId, question,
+                "你是一个专业的计算机算法编程助教，擅长帮助学生解答编程问题、调试代码、解释算法和数据结构。请用简洁清晰的中文回答。",
+                mock, false);
+    }
+
+    public String analyzeCode(Long userId, String code) {
+        return analyzeCode(userId, code, deepSeekProperties.getApi().isMock());
+    }
+
+    public String analyzeCode(Long userId, String code, boolean mock) {
+        String prompt = "请分析以下代码：\n1. 代码结构是否正确\n2. 是否存在潜在 bug\n3. 是否有改进建议\n4. 时间复杂度分析\n\n代码：\n" + code;
+        return callAiWithPrompt(userId, prompt,
+                "你是一个专业的代码审查专家，擅长分析代码质量、发现 bug 和提供优化建议。请用简洁清晰的中文回答，按点列出分析结果。",
+                mock, true);
+    }
+
+    private String callAiWithPrompt(Long userId, String userInput, String systemPrompt, boolean mock, boolean saveAsSubmission) {
         String aiAnswer;
-        try {
-            aiAnswer = callZhipuApi(question);
-        } catch (Exception e) {
-            // 异常时不插入记录，避免污染统计数据
-            throw new RuntimeException("AI服务异常：" + e.getMessage(), e);
+
+        if (mock) {
+            aiAnswer = mockResponse(saveAsSubmission);
+        } else {
+            try {
+                aiAnswer = callDeepSeekApi(userInput, systemPrompt);
+            } catch (Exception e) {
+                String msg = e.getMessage();
+                if (msg != null && msg.contains("connect timed out")) {
+                    throw new RuntimeException("AI 服务连接超时，请检查网络或稍后重试");
+                }
+                if (msg != null && msg.contains("Read timed out")) {
+                    throw new RuntimeException("AI 响应超时，请简化问题后重试");
+                }
+                throw new RuntimeException("AI 服务异常：" + msg, e);
+            }
         }
 
-        // 保存记录（仅成功时）
-        AiRecord record = new AiRecord();
-        record.setUserId(userId);
-        record.setQuestion(question);
-        record.setAiAnswer(aiAnswer);
-        record.setCreateTime(LocalDateTime.now());
-        aiRecordMapper.insert(record);
+        if (saveAsSubmission) {
+            // AI 分析 → 保存为提交记录，增加提交次数
+            Submission submission = new Submission();
+            submission.setUserId(userId);
+            submission.setExerciseId(0L);
+            submission.setCode(userInput);
+            submission.setSubmitTime(LocalDateTime.now());
+            submissionMapper.insert(submission);
+        } else {
+            // AI 对话 → 保存为 AI 记录，增加 AI 使用次数
+            AiRecord record = new AiRecord();
+            record.setUserId(userId);
+            record.setQuestion(userInput);
+            record.setAiAnswer(aiAnswer);
+            record.setCreateTime(LocalDateTime.now());
+            aiRecordMapper.insert(record);
+        }
 
-        // 实时更新学习档案
         learningProfileService.generateProfile(userId);
 
         return aiAnswer;
     }
 
-    private String callZhipuApi(String question) throws Exception {
-        // 构建请求头
+    /** 模拟响应：根据模式返回不同的固定结果 */
+    private String mockResponse(boolean isAnalysis) {
+        if (isAnalysis) {
+            return "代码结构正确，无明显错误";
+        }
+        return "这是一个模拟的 AI 对话回复，你可以输入真实的问题来获得 DeepSeek 的回答。";
+    }
+
+    private String callDeepSeekApi(String userInput, String systemPrompt) throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("Authorization", "Bearer " + zhipuProperties.getApi().getKey());
+        headers.set("Authorization", "Bearer " + deepSeekProperties.getApi().getKey());
 
-        // 构建请求体
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model", zhipuProperties.getApi().getModel());
+        requestBody.put("model", deepSeekProperties.getApi().getModel());
 
-        // system prompt：定义 AI 角色为编程助教
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "你是一个专业的计算机算法编程助教，擅长帮助学生解答编程问题、调试代码、解释算法和数据结构。请用简洁清晰的中文回答。");
+        systemMessage.put("content", systemPrompt);
 
         Map<String, String> userMessage = new HashMap<>();
         userMessage.put("role", "user");
-        userMessage.put("content", question);
+        userMessage.put("content", userInput);
 
         requestBody.put("messages", Arrays.asList(systemMessage, userMessage));
-        requestBody.put("max_tokens", 4096);
+        requestBody.put("max_tokens", 8192);
         requestBody.put("temperature", 0.7);
 
-        // 发送请求
         HttpEntity<String> entity = new HttpEntity<>(objectMapper.writeValueAsString(requestBody), headers);
         ResponseEntity<String> response = restTemplate.exchange(
-                Objects.requireNonNull(zhipuProperties.getApi().getUrl()), Objects.requireNonNull(HttpMethod.POST), entity, String.class);
+                Objects.requireNonNull(deepSeekProperties.getApi().getUrl()), Objects.requireNonNull(HttpMethod.POST), entity, String.class);
 
-        // 解析响应
         if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
             JsonNode root = objectMapper.readTree(response.getBody());
             JsonNode choices = root.path("choices");
