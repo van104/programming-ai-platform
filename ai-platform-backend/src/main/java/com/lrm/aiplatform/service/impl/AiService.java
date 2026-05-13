@@ -113,7 +113,7 @@ public class AiService {
         if (isAnalysis) {
             return "代码结构正确，无明显错误";
         }
-        return "这是一个模拟的 AI 对话回复，你可以输入真实的问题来获得 DeepSeek 的回答。";
+        return "这是一个模拟的 AI 对话回复。";
     }
 
     private String callDeepSeekApi(String userInput, String systemPrompt) throws Exception {
